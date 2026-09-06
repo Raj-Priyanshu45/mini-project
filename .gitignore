@@ -33,4 +33,5 @@ build/
 .vscode/
 mongodb_data:/data/db
 mongodb_data
-.env
+env
+

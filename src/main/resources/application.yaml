@@ -1,25 +1,13 @@
 spring:
   application:
     name: mini-project
-
-  ai:
-    huggingface:
-      chat:
-        api-key: ${Hugging_Face}
-        uri: ${m1-uri}
-
-        options:
-          model: ${m2}
-
-      embedding:
-        api-key: ${Hugging_Face}
-        url: ${m2-uri}
-        options:
-          model: ${m3}
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/mini-project
 
 hf:
-  api-key: ${Hugging_Face}
-
-  uri: ${uri}
-
-  model-uri: ${model-uri}
+  api-key: ${HF_API_KEY}
+  chat-url: https://router.huggingface.co/v1
+  chat-model: meta-llama/Llama-3.1-8B-Instruct
+  uri: https://router.huggingface.co/hf-inference/models
+  model-uri: /j-hartmann/emotion-english-distilroberta-base

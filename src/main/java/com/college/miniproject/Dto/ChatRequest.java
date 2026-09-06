@@ -1,4 +1,4 @@
+// Dto/ChatRequest.java
 package com.college.miniproject.Dto;
 
-public class ChatRequest {
-}
+public record ChatRequest(String message) {}

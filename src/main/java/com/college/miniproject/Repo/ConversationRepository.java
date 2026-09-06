@@ -1,4 +1,8 @@
+// Repo/ConversationRepository.java
 package com.college.miniproject.Repo;
 
-public interface ConversationRepository {
+import com.college.miniproject.Models.Conversation;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface ConversationRepository extends MongoRepository<Conversation, String> {
 }

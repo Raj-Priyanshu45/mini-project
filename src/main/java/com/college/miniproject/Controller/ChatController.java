@@ -1,9 +1,12 @@
 package com.college.miniproject.Controller;
 
-import com.college.miniproject.Service.CompanionChatService;
+import com.college.miniproject.Dto.ChatRequest;
+import com.college.miniproject.Dto.ChatResponse;
+import com.college.miniproject.Models.MoodLog;
+import com.college.miniproject.Repo.MoodLogRepository;
+import com.college.miniproject.Service.ChatCompletionService;
 import com.college.miniproject.Service.EmotionDetectionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,15 +20,16 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class ChatController {
 
-    private final CompanionChatService chatService;
+    private final ChatCompletionService chatService;   // was CompanionChatService
     private final EmotionDetectionService emotionService;
     private final MoodLogRepository moodLogRepo;
 
     @PostMapping
     public ChatResponse chat(@RequestBody ChatRequest req, Principal principal) {
+        String userId = principal != null ? principal.getName() : "anonymous";
         String emotion = emotionService.detectEmotion(req.message());
-        moodLogRepo.save(new MoodLog(principal.getName(), emotion, Instant.now()));
-        String reply = chatService.respond(principal.getName(), req.message(), emotion);
+        moodLogRepo.save(new MoodLog(userId, emotion, Instant.now()));
+        String reply = chatService.respond(userId, req.message(), emotion);
         return new ChatResponse(reply, emotion);
     }
 }

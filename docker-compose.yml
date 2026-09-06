@@ -1,7 +1,7 @@
 services:
   mongodb:
-    image: mongo:latest
-    container_name: shop-mongodb
+    image: mongo:7.0.5
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
