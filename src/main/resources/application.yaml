@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: mini-project
+
+  ai:
+    huggingface:
+      chat:
+        api-key: ${Hugging_Face}
+        uri: ${m1-uri}
+
+        options:
+          model: ${m2}
+
+      embedding:
+        api-key: ${Hugging_Face}
+        url: ${m2-uri}
+        options:
+          model: ${m3}
+
+hf:
+  api-key: ${Hugging_Face}
+
+  uri: ${uri}
+
+  model-uri: ${model-uri}
