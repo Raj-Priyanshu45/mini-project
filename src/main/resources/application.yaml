@@ -1,3 +1,11 @@
+management:
+  tracing:
+    sampling:
+      probability: 1.0   # 1.0 = trace 100% of requests. Use lower in prod (e.g. 0.1)
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces
+
 spring:
   application:
     name: mini-project
@@ -5,9 +13,17 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/mini-project
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8181/realms/Mini-Project
+
 hf:
   api-key: ${HF_API_KEY}
   chat-url: https://router.huggingface.co/v1
   chat-model: meta-llama/Llama-3.1-8B-Instruct
   uri: https://router.huggingface.co/hf-inference/models
   model-uri: /j-hartmann/emotion-english-distilroberta-base
+
+

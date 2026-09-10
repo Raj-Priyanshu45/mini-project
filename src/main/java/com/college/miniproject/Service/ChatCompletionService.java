@@ -3,6 +3,8 @@ package com.college.miniproject.Service;
 import com.college.miniproject.Models.ChatMessage;
 import com.college.miniproject.Models.Conversation;
 import com.college.miniproject.Repo.ConversationRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +17,8 @@ import java.util.Map;
 
 @Service
 public class ChatCompletionService {
+
+    private final MemoryService memoryService;
 
     private static final String SYSTEM_PROMPT = """
             You are Virtual Saathi, a warm, non-judgmental companion for young people.
@@ -31,9 +35,11 @@ public class ChatCompletionService {
             @Value("${hf.api-key}") String apiKey,
             @Value("${hf.chat-url}") String chatUrl,
             @Value("${hf.chat-model}") String model,
-            ConversationRepository conversationRepo) {
+            ConversationRepository conversationRepo ,
+            MemoryService memoryService) {
         this.model = model;
         this.conversationRepo = conversationRepo;
+        this.memoryService = memoryService;
         this.webClient = WebClient.builder()
                 .baseUrl(chatUrl)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
@@ -53,8 +59,16 @@ public class ChatCompletionService {
                 ? history.subList(history.size() - 20, history.size())
                 : history;
 
+        String memorySummary = memoryService.getSummary(userId);
+
         List<Map<String, String>> payloadMessages = new ArrayList<>();
         payloadMessages.add(Map.of("role", "system", "content", SYSTEM_PROMPT));
+        if (!memorySummary.isBlank()) {
+            payloadMessages.add(Map.of(
+                    "role", "system",
+                    "content", "What you remember about this specific user from past conversations:\n" + memorySummary
+            ));
+        }
         window.forEach(m -> payloadMessages.add(Map.of("role", m.getRole(), "content", m.getContent())));
 
         Map<String, Object> response = webClient.post()
@@ -67,6 +81,9 @@ public class ChatCompletionService {
         String reply = extractReply(response);
         convo.getMessages().add(new ChatMessage("assistant", reply));
         conversationRepo.save(convo);
+
+        memoryService.recordTurnAndMaybeUpdate(userId, convo);
+
         return reply;
     }
 

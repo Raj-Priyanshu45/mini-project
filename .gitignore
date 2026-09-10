@@ -34,4 +34,5 @@ build/
 mongodb_data:/data/db
 mongodb_data
 env
-
+./volume-dat/mysql_keycloak_data:/var/lib/mysql
+volume-dat/mysql_keycloak_data

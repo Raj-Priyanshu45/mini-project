@@ -1,4 +1,50 @@
 services:
+
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak-mysql
+      MYSQL_PASSWORD: root
+
+    volumes:
+      - ./volume-dat/mysql_keycloak_data:/var/lib/mysql
+
+    ports:
+      - "4306:3306"
+
+  keycloak:
+    container_name: keyCloak
+    image: quay.io/keycloak/keycloak:26.5.4
+    command: [ "start-dev" ]
+    environment:
+      KC_DB: mysql
+      KC_DB_URL_HOST: keycloak-mysql
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak-mysql
+      KC_DB_PASSWORD: root
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+    ports:
+      - "8181:8080"
+    depends_on:
+      - keycloak-mysql
+
+
+  jaeger:
+    container_name: om-dalla
+    image: jaegertracing/all-in-one:1.60
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+      - "14268:14268"
+    environment:
+      - COLLECTOR_OTLP_ENABLED= true
+
   mongodb:
     image: mongo:7.0.5
     container_name: mongodb
@@ -9,3 +55,4 @@ services:
 
 volumes:
   mongodb_data:
+

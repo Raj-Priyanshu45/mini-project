@@ -1,4 +1,7 @@
 package com.college.miniproject.Repo;
 
-public class UserMemoryRepository {
+import com.college.miniproject.Models.UserMemory;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface UserMemoryRepository extends MongoRepository<UserMemory, String> {
 }
