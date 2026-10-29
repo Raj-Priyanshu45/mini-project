@@ -43,7 +43,7 @@ services:
       - "4318:4318"
       - "14268:14268"
     environment:
-      - COLLECTOR_OTLP_ENABLED= true
+      - COLLECTOR_OTLP_ENABLED=true
 
   mongodb:
     image: mongo:7.0.5

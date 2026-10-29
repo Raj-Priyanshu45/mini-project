@@ -7,6 +7,11 @@ management:
       endpoint: http://localhost:4318/v1/traces
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   application:
     name: mini-project
   data:
@@ -21,9 +26,16 @@ spring:
 
 hf:
   api-key: ${HF_API_KEY}
-  chat-url: https://router.huggingface.co/v1
-  chat-model: meta-llama/Llama-3.1-8B-Instruct
-  uri: https://router.huggingface.co/hf-inference/models
-  model-uri: /j-hartmann/emotion-english-distilroberta-base
+  chat-url: https://api.groq.com/openai/v1
+  chat-model: openai/gpt-oss-20b
+
+stt:
+  python-path: /home/devxraj/stt-server/.venv/bin/python
+  script-path: /home/devxraj/stt-server/stt_cli.py
+  timeout-seconds: 120
+
+emotion:
+  python-path: /home/devxraj/stt-server/.venv/bin/python
+  script-path: /home/devxraj/stt-server/emotion_cli.py
 
 

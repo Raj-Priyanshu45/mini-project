@@ -1,49 +1,40 @@
 package com.college.miniproject.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+
 @Service
+@Slf4j
 public class EmotionDetectionService {
 
-    private final WebClient webClient;
-    private final String modelUri;
+    private final String pythonPath;
+    private final String scriptPath;
 
     public EmotionDetectionService(
-            @Value("${hf.api-key}") String apiKey,
-            @Value("${hf.uri}") String hfUri,
-            @Value("${hf.model-uri}") String modelUri
-    ) {
-        this.modelUri = modelUri;
-
-        this.webClient = WebClient.builder()
-                .baseUrl(hfUri)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-                .build();
+            @Value("${emotion.python-path}") String pythonPath,
+            @Value("${emotion.script-path}") String scriptPath) {
+        this.pythonPath = pythonPath;
+        this.scriptPath = scriptPath;
     }
 
     public String detectEmotion(String text) {
-
-        List<List<Map<String, Object>>> response = webClient.post()
-                .uri(modelUri)
-                .bodyValue(Map.of("inputs", text))
-                .retrieve()
-                .bodyToMono(
-                        new ParameterizedTypeReference<List<List<Map<String, Object>>>>() {}
-                )
-                .block();
-
-        return response.get(0).stream()
-                .max(Comparator.comparingDouble(
-                        m -> (Double) m.get("score")
-                ))
-                .map(m -> (String) m.get("label"))
-                .orElse("neutral");
+        try {
+            Process p = new ProcessBuilder(pythonPath, scriptPath, text)
+                    .redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .start();
+            String out = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
+            if (!p.waitFor(60, TimeUnit.SECONDS)) {
+                p.destroyForcibly();
+                return "neutral";
+            }
+            return (p.exitValue() == 0 && !out.isBlank()) ? out : "neutral";
+        } catch (Exception e) {
+            log.error("Emotion detection failed, falling back to neutral", e);
+            return "neutral";
+        }
     }
 }

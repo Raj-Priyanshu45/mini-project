@@ -25,6 +25,8 @@ public class ChatCompletionService {
             Validate feelings before offering suggestions. Never give medical or
             clinical advice. If the user expresses self-harm intent, gently
             encourage them to reach out to a trusted adult or a helpline.
+            Always reply in the same language and script the user writes in
+            (for example, Hindi in Devanagari, Hinglish in Roman letters).
             """;
 
     private final WebClient webClient;
