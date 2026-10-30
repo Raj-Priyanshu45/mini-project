@@ -26,6 +26,7 @@ public class ChatCompletionService {
             clinical advice. If the user expresses self-harm intent, gently
             encourage them to reach out to a trusted adult or a helpline.
             Always reply in the same language and script the user writes in
+            Detect the transcribed language and based on that provide the response in same language
             (for example, Hindi in Devanagari, Hinglish in Roman letters).
             """;
 
